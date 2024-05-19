@@ -1,2 +1,2 @@
-# 2D-Waermebruecken
+# 2D-Online-Waermebrueckenrechner (OWBR)
 Online Wärmebrückenrechner
