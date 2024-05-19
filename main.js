@@ -1,82 +1,92 @@
 /**
- * creates zero Matrix 
- * @param {number} hight 
+ * This function creates a zero matrix with a given height and width 
+ * @param {number} height 
  * @param {number} width 
- * @returns {array}
+ * @returns {number[][]} 
  */
-function matrix_zero(hight, width) {
+function matrix_zero(height, width) {
     let matrix = []
-    for (let i = 0; i < hight; i += 1) {
-        let matrix_row = []
+    for (let i = 0; i < height; i += 1) {
+        let matrixRow = []
         for (let j = 0; j < width; j += 1) {
-            matrix_row.push(0)
+            matrixRow.push(0)
         }
-        matrix.push(matrix_row)
+        matrix.push(matrixRow)
     }
     return matrix
 }
 
+/**
+ * This function returns the width of a matrix
+ * @param {number[][]} matrix 
+ * @returns {number}
+ */
 function matrix_width(matrix) {
     return matrix[0].length
 }
 
-function matrix_hight(matrix) {
+/**
+ * This function returns the height of a matrix
+ * @param {number[][]} matrix 
+ * @returns {number}
+ */
+function matrix_height(matrix) {
     return matrix.length
 }
 
 /**
- * adds two Matrix
- * @param {array} m1
- * @param {array} m2
- * @returns {array}
+ * This function returns the entrywise sum of two matrix
+ * @param {number[][]} matrix1
+ * @param {number[][]} matrix2
+ * @returns {number[][]}
  */
-function matrix_addition(m1, m2) {
-    if (matrix_width(m1) != matrix_width(m2) && matrix_hight(m1) != matrix_hight(m2)) {
+function matrix_addition(matrix1, matrix2) {
+    if (matrix_width(matrix1) != matrix_width(matrix2) && matrix_height(matrix1) != matrix_height(matrix2)) {
         throw "Matrix addition aborted! Two wrong sized matrix"
     }
     let matrix = []
-    for (let i = 0; i < matrix_width(m1); i += 1) {
-        let matrix_row = []
-        for (let j = 0; j < matrix_hight(m1); j += 1) {
-            matrix_row.push(m1[i][j] + m2[i][j])
+    for (let i = 0; i < matrix_width(matrix1); i += 1) {
+        let matrixRow = []
+        for (let j = 0; j < matrix_height(matrix1); j += 1) {
+            matrixRow.push(matrix1[i][j] + matrix2[i][j])
         }
-        matrix.push(matrix_row)
+        matrix.push(matrixRow)
     }
     return matrix
 }
 
 /**
- * Expands matrix
- * @param {array} small_matrix [[1, -1], [-1, 1]]
- * @param {array} counter_matrix [1, 2]
- * @param {array} matrix_width 3
- * @returns {array} [[ 0, 0, 0 ], [ 0, 1, -1 ], [ 0, -1, 1 ]]
+ * This function expands the original matrix to the new width. The counter matrix describes the new position of the original matrix
+ * @param {number[][]} og_matrix - e.g.: [[1, -1], [-1, 1]]
+ * @param {number[]} counter_matrix - e.g.: [1, 2]
+ * @param {number} matrix_width - e.g: 3
+ * @returns {number[][]} - e.g: [[ 0, 0, 0 ], [ 0, 1, -1 ], [ 0, -1, 1 ]]
  */
-function matrix_expand(small_matrix, counter_matrix, matrix_width) {
+function matrix_expand(og_matrix, counter_matrix, matrix_width) {
     let matrix = []
     for (let i = 0; i < matrix_width; i += 1) {
-        let matrix_row = []
+        let matrixRow = []
         for (let j = 0; j < matrix_width; j += 1) {
             if (counter_matrix.includes(i) && counter_matrix.includes(j)) {
-                matrix_row.push(small_matrix[counter_matrix.indexOf(i)][counter_matrix.indexOf(j)])
+                matrixRow.push(og_matrix[counter_matrix.indexOf(i)][counter_matrix.indexOf(j)])
             } else {
-                matrix_row.push(0)
+                matrixRow.push(0)
             }
         }
-        matrix.push(matrix_row)
+        matrix.push(matrixRow)
     }
     return matrix
 }
 
 /**
- * Shuffels matrix in new orientation
- * @param {array} matrix 
- * @param {array} new_order 
- * @returns {array}
+ * This function shuffels the original matrix in a new order
+ * @param {number[][]} og_matrix - e.g.: [[1, 2], [3, 4]]
+ * @param {number[]} new_order - e.g.: [1, 0]
+ * @returns {number[][]} - e.g.: [[4, 3], [2, 1]]
  */
 function matrix_shuffel(og_matrix, new_order) {
     if (og_matrix.length != og_matrix[0].length) {
-        throw "The function 'matrix_shuffel' needs a matrix with the same hight and width"
+        throw "The function 'matrix_shuffel' needs a matrix with the same height and width"
     }
     let matrix = matrix_zero(og_matrix.length, og_matrix[0].length)
     for (let i = 0; i < og_matrix.length; i += 1) {
@@ -87,73 +97,46 @@ function matrix_shuffel(og_matrix, new_order) {
     return matrix
 }
 
-function matrix_multiplication(og_matrix, multiplicator) {
-    if (og_matrix.length != og_matrix[0].length) {
-        throw "The function 'matrix_multiplication' needs a matrix with the same hight and width"
-    }
-    let matrix = matrix_zero(og_matrix.length, og_matrix[0].length)
-    for (let i = 0; i < og_matrix.length; i += 1) {
-        for (let j = 0; j < og_matrix[0].length; j += 1) {
-            matrix[i][j] = og_matrix[i][j] * multiplicator
-        }
-    }
-    return matrix
-}
-
-function matrix_division(og_matrix, divisior) {
-    if (og_matrix.length != og_matrix[0].length) {
-        throw "The function 'matrix_division' needs a matrix with the same hight and width"
-    }
-    let matrix = matrix_zero(og_matrix.length, og_matrix[0].length)
-    for (let i = 0; i < og_matrix.length; i += 1) {
-        for (let j = 0; j < og_matrix[0].length; j += 1) {
-            matrix[i][j] = og_matrix[i][j] / divisior
-        }
-    }
-    return matrix
-}
-
 /**
- * Function to create the stiffnes matrix
- * @param {array} e1_punkte 
- * @param {array} e1_matrix 
- * @param {array} e2_punkte 
- * @param {array} e2_matrix 
- * @returns {{array}, {array}}
+ * This function creates the stiffness matrix and returns all points and the stiffness matrix
+ * @param {number[]} e1_points 
+ * @param {number[][]} e1_matrix 
+ * @param {number[]} e2_points 
+ * @param {number[][]} e2_matrix 
  */
-function stiffness_matrix(e1_punkte, e1_matrix, e2_punkte, e2_matrix) {
-    alle_punkte = e1_punkte.map((x) => x)
+function stiffness_matrix(e1_points, e1_matrix, e2_points, e2_matrix) {
+    allPoints = e1_points.map((x) => x)
 
-    for (let e2_punkt of e2_punkte) {
-        let doppelt = false
-        for (let punkt of e1_punkte) {
-            if (punkt.x == e2_punkt.x && punkt.y == e2_punkt.y) {
-                doppelt = true
+    for (let e2_point of e2_points) {
+        let double = false
+        for (let point of e1_points) {
+            if (point.x == e2_point.x && point.y == e2_point.y) {
+                double = true
                 break
             }
         }
-        if (!doppelt) { alle_punkte.push(e2_punkt) }
+        if (!double) { allPoints.push(e2_point) }
     }
 
     let counter = 0
-    let exp_counter_matrix_e1 = []
-    let exp_counter_matrix_e2 = []
+    let expand_counter_matrix_e1 = []
+    let expand_counter_matrix_e2 = []
     let shuffel_matrix_e1 = []
     let shuffel_matrix_e2 = []
-    for (let punkt of alle_punkte) {
+    for (let point of allPoints) {
         let e_counter = 0
-        for (let punkt_e1 of e1_punkte) {
-            if (punkt.x == punkt_e1.x && punkt.y == punkt_e1.y) {
-                exp_counter_matrix_e1.push(counter)
+        for (let e1_point of e1_points) {
+            if (point.x == e1_point.x && point.y == e1_point.y) {
+                expand_counter_matrix_e1.push(counter)
                 shuffel_matrix_e1.push(e_counter)
                 break
             }
             e_counter += 1
         }
         e_counter = 0
-        for (let punkt_e2 of e2_punkte) {
-            if (punkt.x == punkt_e2.x && punkt.y == punkt_e2.y) {
-                exp_counter_matrix_e2.push(counter)
+        for (let e2_point of e2_points) {
+            if (point.x == e2_point.x && point.y == e2_point.y) {
+                expand_counter_matrix_e2.push(counter)
                 shuffel_matrix_e2.push(e_counter)
                 break
             }
@@ -166,40 +149,40 @@ function stiffness_matrix(e1_punkte, e1_matrix, e2_punkte, e2_matrix) {
     e1_matrix = matrix_shuffel(e1_matrix, shuffel_matrix_e1)
     e2_matrix = matrix_shuffel(e2_matrix, shuffel_matrix_e2)
 
-    e1_matrix = matrix_expand(e1_matrix, exp_counter_matrix_e1, alle_punkte.length)
-    e2_matrix = matrix_expand(e2_matrix, exp_counter_matrix_e2, alle_punkte.length)
+    e1_matrix = matrix_expand(e1_matrix, expand_counter_matrix_e1, allPoints.length)
+    e2_matrix = matrix_expand(e2_matrix, expand_counter_matrix_e2, allPoints.length)
 
-    let globale_matrix = matrix_addition(e1_matrix, e2_matrix)
+    let global_matrix = matrix_addition(e1_matrix, e2_matrix)
 
-    return alle_punkte, globale_matrix
+    return allPoints, global_matrix
 }
 
 
-class Bauteil {
-    constructor(x, y, breite, höhe, lambda) {
+class Component {
+    constructor(x, y, width, height, lambda) {
         this.x1 = x
-        this.x2 = x + breite
+        this.x2 = x + width
         this.y1 = y
-        this.y2 = y + höhe
-        this.breite = breite
-        this.höhe = höhe
+        this.y2 = y + height
+        this.width = width
+        this.height = height
         this.lambda = lambda
     }
 }
 
 class Element {
-    constructor(x, y, elementbreite, elementhöhe, lambda) {
+    constructor(x, y, elementWidth, elementHeight, lambda) {
         this.x1 = x
-        this.x2 = x + elementbreite
+        this.x2 = x + elementWidth
         this.y1 = y
-        this.y2 = y + elementhöhe
-        this.alpha = lambda / elementbreite // TODO: Ändern in allgemeine Länge nicht nur Breite
+        this.y2 = y + elementHeight
+        this.alpha = lambda / elementWidth // TODO: Change to include elementHeight
 
-        this.punkte = [
-            new Punkt(this.x1, this.y1),
-            new Punkt(this.x2, this.y1),
-            new Punkt(this.x1, this.y2),
-            new Punkt(this.x2, this.y2)
+        this.points = [
+            new Point(this.x1, this.y1),
+            new Point(this.x2, this.y1),
+            new Point(this.x1, this.y2),
+            new Point(this.x2, this.y2)
         ]
 
         this.matrix = [
@@ -211,113 +194,113 @@ class Element {
     }
 }
 
-class Punkt {
+class Point {
     constructor(x, y) {
         this.x = x
         this.y = y
-        this.temperatur = 0
-        this.wärmestrom = 0
-        this.randbedingung = false
+        this.temperature = 0
+        this.heatFlow = 0
+        this.boundaryCondition = false
     }
 }
 
-class Randbedingung {
-    constructor(x, y, breite, höhe, temperatur) {
+class BoundaryCondition {
+    constructor(x, y, width, height, temperature) {
         this.x = x
         this.y = y
-        this.breite = breite
-        this.höhe = höhe
-        this.temperatur = temperatur
+        this.width = width
+        this.height = height
+        this.temperature = temperature
     }
 }
 
 
 
 
-let bauteile = []
-bauteile.push(new Bauteil(0, 0, 10, 10, 0.035))
-bauteile.push(new Bauteil(10, 0, 10, 10, 2))
+let components = []
+components.push(new Component(0, 0, 10, 10, 0.035))
+components.push(new Component(10, 0, 10, 10, 2))
 
-let randbedingungen = []
-let innentemp = 20
-let außentemp = 0
-randbedingungen.push(new Randbedingung(0, 0, 1, 500, außentemp))
-randbedingungen.push(new Randbedingung(20, 0, 1, 500, innentemp))
+let boundaryConditions = []
+let outsideTemperature = 0
+let insideTemperature = 20
+boundaryConditions.push(new BoundaryCondition(0, 0, 1, 500, outsideTemperature))
+boundaryConditions.push(new BoundaryCondition(20, 0, 1, 500, insideTemperature))
 
-// let bauteile = []
-// bauteile.push(new Bauteil(0, 0, 5, 10,  0.035))
-// bauteile.push(new Bauteil(0, 10, 15, 5, 0.035))
-// bauteile.push(new Bauteil(5, 0, 3, 10, 2))
-// bauteile.push(new Bauteil(8, 7, 7, 3, 2))
+// let components = []
+// components.push(new Component(0, 0, 5, 10,  0.035))
+// components.push(new Component(0, 10, 15, 5, 0.035))
+// components.push(new Component(5, 0, 3, 10, 2))
+// components.push(new Component(8, 7, 7, 3, 2))
 
-// let randbedingungen = []
-// let innentemp = 20
-// let außentemp = 0
-// randbedingungen.push(new Randbedingung(0, 0, 1, 50, innentemp))
-// randbedingungen.push(new Randbedingung(0, 15, 50, 1, innentemp))
-// randbedingungen.push(new Randbedingung(8, 0, 1, 7, außentemp))
-// randbedingungen.push(new Randbedingung(8, 7, 9, 1, außentemp))
+// let boundaryConditions = []
+// let outsideTemperature = 0
+// let insideTemperature = 20
+// boundaryConditions.push(new BoundaryCondition(0, 0, 1, 50, insideTemperature))
+// boundaryConditions.push(new BoundaryCondition(0, 15, 50, 1, insideTemperature))
+// boundaryConditions.push(new BoundaryCondition(8, 0, 1, 7, outsideTemperature))
+// boundaryConditions.push(new BoundaryCondition(8, 7, 9, 1, outsideTemperature))
 
-let elemente = []
-let elementbreite = 1
-let elementhöhe = 1
+let elements = []
+let elementWidth = 1
+let elementHeigth = 1
 
-for (bauteil of bauteile) {
-    for (y = bauteil.y1; y < bauteil.y2; y += 1) {
-        for (x = bauteil.x1; x < bauteil.x2; x += 1) {
-            elemente.push(new Element(x, y, elementbreite, elementhöhe, bauteil.lambda))
+for (let component of components) {
+    for (y = component.y1; y < component.y2; y += 1) {
+        for (x = component.x1; x < component.x2; x += 1) {
+            elements.push(new Element(x, y, elementWidth, elementHeigth, component.lambda))
         }
     }
 }
 
-let alle_punkte = elemente[0].punkte
-let globale_matrix = elemente[0].matrix
-for (let i = 1; i < elemente.length; i += 1) {
-    console.log("Element: " + i + " von: " + elemente.length)
-    alle_punkte, globale_matrix = stiffness_matrix(alle_punkte, globale_matrix, elemente[i].punkte, elemente[i].matrix)
+let allPoints = elements[0].points
+let global_matrix = elements[0].matrix
+for (let i = 1; i < elements.length; i += 1) {
+    console.log("Element: " + i + " von: " + elements.length)
+    allPoints, global_matrix = stiffness_matrix(allPoints, global_matrix, elements[i].points, elements[i].matrix)
 }
 
-for (randbedingung of randbedingungen) {
-    for (let i = 0; i < alle_punkte.length; i += 1) {
-        if (alle_punkte[i].x >= randbedingung.x && alle_punkte[i].x < randbedingung.breite + randbedingung.x
-            && alle_punkte[i].y >= randbedingung.y && alle_punkte[i].y < randbedingung.höhe + randbedingung.y
+for (let boundaryCondition of boundaryConditions) {
+    for (let i = 0; i < allPoints.length; i += 1) {
+        if (allPoints[i].x >= boundaryCondition.x && allPoints[i].x < boundaryCondition.width + boundaryCondition.x
+            && allPoints[i].y >= boundaryCondition.y && allPoints[i].y < boundaryCondition.height + boundaryCondition.y
         ) {
-            alle_punkte[i].temperatur = randbedingung.temperatur
-            alle_punkte[i].wärmestrom = 0
-            alle_punkte[i].randbedingung = true
+            allPoints[i].temperature = boundaryCondition.temperature
+            allPoints[i].heatFlow = 0
+            allPoints[i].boundaryCondition = true
         }
     }
 }
 
 
-// Gauss-Seidel-Verfahren zum Lösen des linearen Gleichungssystems
-let iterationen = 1000
-for (let foo = 0; foo < iterationen; foo += 1) {
-    console.log("Iteration: " + foo + " von: " + iterationen)
-    for (let i = 0; i < alle_punkte.length; i += 1) {
-        let summe = 0
-        for (let j = 0; j < globale_matrix[i].length; j += 1) {
-            if (globale_matrix[i][j] == 0 || i == j) {
+// Gauss-Seidel-Method to solve the linear equation
+let iterations = 1000
+for (let iteration = 0; iteration < iterations; iteration += 1) {
+    console.log("Iteration: " + iteration + " of: " + iterations)
+    for (let i = 0; i < allPoints.length; i += 1) {
+        let sum = 0
+        for (let j = 0; j < global_matrix[i].length; j += 1) {
+            if (global_matrix[i][j] == 0 || i == j) {
                 continue
             }
-            summe += globale_matrix[i][j] * alle_punkte[j].temperatur
+            sum += global_matrix[i][j] * allPoints[j].temperature
         }
-        if (alle_punkte[i].randbedingung == true) {
-            alle_punkte[i].wärmestrom = globale_matrix[i][i] * alle_punkte[i].temperatur + summe
+        if (allPoints[i].boundaryCondition == true) {
+            allPoints[i].heatFlow = global_matrix[i][i] * allPoints[i].temperature + sum
         } else {
-            alle_punkte[i].temperatur = 1 / globale_matrix[i][i] * (alle_punkte[i].wärmestrom - summe)
+            allPoints[i].temperature = 1 / global_matrix[i][i] * (allPoints[i].heatFlow - sum)
         }
     }
 }
 
-for (punkt of alle_punkte) {
-    if (punkt.y == 0) {
-        console.log("x: " + punkt.x + " y: " + punkt.y + " T: " + ("   " + punkt.temperatur.toFixed(1)).slice(-6) + " WS: " + ("    " + punkt.wärmestrom.toFixed(1)).slice(-6) + " RB: " + punkt.randbedingung)
+for (let point of allPoints) {
+    if (point.y == 0) {
+        console.log("x: " + point.x + " y: " + point.y + " T: " + ("  " + point.temperature.toFixed(1)).slice(-4) + " HF: " + ("  " + point.heatFlow.toFixed(1)).slice(-4) + " RB: " + point.boundaryCondition)
     }
 }
 
 
-
+// Paint results on canvas
 let canvas = document.getElementById("canvas")
 let context = canvas.getContext("2d")
 
@@ -329,18 +312,18 @@ canvas.width = window_width
 
 canvas.style.backgroundColor = "#ff8"
 
-for (punkt of alle_punkte) {
-    let mitteltemp = (innentemp-außentemp)/2
-    if (punkt.temperatur <= mitteltemp) {
+for (let point of allPoints) {
+    let middleTemperature = (insideTemperature-outsideTemperature)/2
+    if (point.temperature <= middleTemperature) {
         context.fillStyle = `rgb(
             0
-            ${Math.floor(punkt.temperatur / mitteltemp * 255)}
-            ${Math.floor(255 - punkt.temperatur / mitteltemp * 255)})`;
+            ${Math.floor(point.temperature / middleTemperature * 255)}
+            ${Math.floor(255 - point.temperature / middleTemperature * 255)})`;
     } else {
         context.fillStyle = `rgb(
-            ${Math.floor((punkt.temperatur-mitteltemp) / mitteltemp * 255)}
-            ${Math.floor(255 - (punkt.temperatur-mitteltemp) / mitteltemp * 255)}
+            ${Math.floor((point.temperature-middleTemperature) / middleTemperature * 255)}
+            ${Math.floor(255 - (point.temperature-middleTemperature) / middleTemperature * 255)}
             0)`;
     }
-    context.fillRect(50 + punkt.x * 10, 50 + punkt.y * 10, 10, 10)
+    context.fillRect(50 + point.x * 10, 50 + point.y * 10, 10, 10)
 }
