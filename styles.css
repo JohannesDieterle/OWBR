@@ -1,3 +1,110 @@
 body {
-    margin: 0;
+  margin: 0;
+  background-color: #222222;
+}
+
+.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  background-color: #444444;
+}
+
+.topnav li {
+  float: left;
+  border-right: 1px solid #444444;
+}
+
+.topnav li:last-child {
+  float: right;
+  border-right: none;
+}
+
+.topnav input {
+  background-color: #a52;
+  border: none;
+  color: white;
+  margin: 6px 3px;
+  padding: 16px 32px;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.topnav img {
+  width: 60px;
+  height: 60px;
+}
+
+.leftnav {
+  height: 100%;
+  width: 50px;
+  position: fixed;
+  z-index: 1;
+  top: 60px;
+  left: 0;
+  background-color: #444444;
+}
+
+.leftnav input {
+  display: list-item;
+  width: 40px;
+  height: 40px;
+  padding: 2px 2px;
+  margin: 5px;
+  background-color: #a52;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.leftnav input:hover {
+  background-color: orange;
+}
+
+.leftnav input.active {
+  background-color: orange;
+}
+
+.main {
+  margin-top: 90px;
+  margin-left: 80px;
+}
+.main canvas {
+  background-color: #111;
+  width: 800px;
+  height: 650px;
+}
+
+.info {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+.info p {
+  width: 250px;
+  margin: 5px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+}
+#info1 {
+  color: #fff;
+}
+#info2 {
+  color: #aaa;
+}
+#info3 {
+  color: #666;
+}
+#info4 {
+  color: #444;
 }

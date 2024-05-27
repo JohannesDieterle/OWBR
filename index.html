@@ -1,15 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="de">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FEM Rechner</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="./main.js"></script>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Online-Wärmebrückenrechner</title>
+    <link rel="icon" type="image/x-icon" href="/images/Logo_32x32.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer type="module" src="./app.js"></script>
+  </head>
 
-<body>
-    <canvas id="canvas"></canvas>
-</body>
+  <body>
+    <ul class="topnav">
+      <li><input id="button_calculate" type="button" value="Calculate" /></li>
+      <li>
+        <input
+          id="button_show_components"
+          type="button"
+          value="Show components"
+        />
+      </li>
+      <li>
+        <input
+          id="button_show_calculations"
+          type="button"
+          value="Show calculations"
+        />
+      </li>
+      <li>
+        <input id="button_delete_all" type="button" value="Delete all" />
+      </li>
+      <li><img src="/images/Logo.png" alt="Logo" /></li>
+    </ul>
+
+    <div class="leftnav">
+      <input id="btn_nothing" class="active" type="button" value="point" />
+      <input id="btn_draw_rect" type="button" value="draw" />
+      <input id="btn_remove_rect" type="button" value="erase" />
+    </div>
+
+    <!-- <div class="rightnav">
+      <div type="text" />
+    </div> -->
+
+    <div class="info">
+      <p id="info4"></p>
+      <p id="info3"></p>
+      <p id="info2"></p>
+      <p id="info1"></p>
+    </div>
+
+    <div class="main">
+      <canvas id="canvas"></canvas>
+    </div>
+  </body>
 </html>
