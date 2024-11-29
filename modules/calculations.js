@@ -1,32 +1,16 @@
 import * as matrix from "/modules/matrix.js";
 import { Element, BoundaryConditionPoint } from "/modules/CaB.js";
-
-function calculate_elements(components) {
-  let elements = [];
-  let elementWidth = 1;
-  let elementHeigth = 1;
-
-  for (let component of components) {
-    for (let y = component.y1; y < component.y2; y += 1) {
-      for (let x = component.x1; x < component.x2; x += 1) {
-        elements.push(
-          new Element(x, y, elementWidth, elementHeigth, component.lambda)
-        );
-      }
-    }
-  }
-  return elements;
-}
+import { calculate_elements } from "/modules/delaunyTriangulation.js";
 
 function calculate_stiffnessmatrix(elements, boundaryConditions) {
   let allPoints = elements[0].points;
-  let globalMatrix = matrix.compact(elements[0].matrix);
+  let globalMatrix = matrix.compact(matrix.get(elements[0]));
   for (let i = 1; i < elements.length; i += 1) {
     [allPoints, globalMatrix] = matrix.stiffness(
       allPoints,
       globalMatrix,
       elements[i].points,
-      elements[i].matrix
+      matrix.get(elements[i])
     );
     if (i % 100 == 0) {
       console.log("Element: " + i + " of: " + elements.length);
@@ -54,7 +38,7 @@ function calculate_stiffnessmatrix(elements, boundaryConditions) {
   return [allPoints, globalMatrix];
 }
 
-function calculate_linearequation(allPoints, globalMatrix) {
+function calculate_linearequation(allPoints, globalMatrix, components) {
   // Gauss-Seidel-Method to solve the linear equation
   let lastConvergence = 0;
   for (let iteration = 0; true; iteration += 1) {
@@ -92,6 +76,7 @@ function calculate_linearequation(allPoints, globalMatrix) {
       console.log(
         `Iteration: ${iteration}, convergence: ${Math.floor(dif * 10e4)}`
       );
+      // show_calculation(allPoints, components);
       if (dif < 10e-6) {
         break;
       }
@@ -104,7 +89,16 @@ function calculate_linearequation(allPoints, globalMatrix) {
 
 export function calculate_thermal_bridge(components, boundaryConditions) {
   // Create all elements from the components
-  let elements = calculate_elements(components);
+  let elements = [];
+  if (components[0].elements.length == 0) {
+    elements = calculate_elements(components);
+  } else {
+    for (const component of components) {
+      for (const element of component.elements) {
+        elements.push(element);
+      }
+    }
+  }
 
   // Get stiffnessmatrix
   let [allPoints, globalMatrix] = calculate_stiffnessmatrix(
@@ -112,7 +106,7 @@ export function calculate_thermal_bridge(components, boundaryConditions) {
     boundaryConditions
   );
 
-  allPoints = calculate_linearequation(allPoints, globalMatrix);
+  allPoints = calculate_linearequation(allPoints, globalMatrix, components);
 
   return [allPoints, components];
 }

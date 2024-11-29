@@ -1,26 +1,41 @@
-import { Component, BoundaryCondition, CanvasData } from "./modules/CaB.js";
+import {
+  Component,
+  Point,
+  BoundaryCondition,
+  CanvasData,
+} from "./modules/CaB.js";
 import { calculate_thermal_bridge } from "./modules/calculations.js";
 
 /*---------------------- components and boundaryConditions ----------------------*/
 
 let components = [];
-components.push(new Component(80, 0, 20, 90, 2.1));
-components.push(new Component(0, 90, 200, 20, 2.1));
-components.push(new Component(80, 110, 20, 90, 2.1));
-components.push(new Component(100, 0, 20, 90, 0.035));
-components.push(new Component(100, 110, 20, 90, 0.035));
-
 let boundaryConditions = [];
 let outside = 1;
 let inside = 0;
-boundaryConditions.push(new BoundaryCondition(80, 0, 1, 90, inside));
-boundaryConditions.push(new BoundaryCondition(0, 90, 80, 1, inside));
-boundaryConditions.push(new BoundaryCondition(0, 110, 80, 1, inside));
-boundaryConditions.push(new BoundaryCondition(80, 110, 1, 90, inside));
-boundaryConditions.push(new BoundaryCondition(120, 0, 1, 90, outside));
-boundaryConditions.push(new BoundaryCondition(120, 90, 80, 1, outside));
-boundaryConditions.push(new BoundaryCondition(120, 110, 1, 90, outside));
-boundaryConditions.push(new BoundaryCondition(120, 110, 80, 1, outside));
+
+// createComponents(80, 0, 20, 90, 2.1);
+// createComponents(0, 90, 200, 20, 2.1);
+// createComponents(80, 110, 20, 90, 2.1);
+// createComponents(100, 0, 20, 90, 0.035);
+// createComponents(100, 110, 20, 90, 0.035);
+// boundaryConditions.push(new BoundaryCondition(80, 0, 1, 90, inside));
+// boundaryConditions.push(new BoundaryCondition(0, 90, 80, 1, inside));
+// boundaryConditions.push(new BoundaryCondition(0, 110, 80, 1, inside));
+// boundaryConditions.push(new BoundaryCondition(80, 110, 1, 90, inside));
+// boundaryConditions.push(new BoundaryCondition(120, 0, 1, 90, outside));
+// boundaryConditions.push(new BoundaryCondition(120, 90, 80, 1, outside));
+// boundaryConditions.push(new BoundaryCondition(120, 110, 1, 90, outside));
+// boundaryConditions.push(new BoundaryCondition(120, 110, 80, 1, outside));
+
+createComponents(10, 10, 150, 20, 0.035);
+createComponents(10, 30, 20, 130, 0.035);
+createComponents(30, 30, 130, 10, 2.1);
+createComponents(30, 40, 10, 120, 2.1);
+
+boundaryConditions.push(new BoundaryCondition(10, 10, 150, 1, outside));
+boundaryConditions.push(new BoundaryCondition(10, 10, 1, 150, outside));
+boundaryConditions.push(new BoundaryCondition(40, 40, 120, 1, inside));
+boundaryConditions.push(new BoundaryCondition(40, 40, 1, 120, inside));
 
 /*---------------------- components and boundaryConditions ----------------------*/
 
@@ -36,13 +51,27 @@ show_components(components);
 
 let canvasData = new CanvasData();
 
+function createComponents(x, y, dx, dy, lambda) {
+  components.push(
+    new Component(
+      [
+        new Point(x, y),
+        new Point(x, y + dy),
+        new Point(x + dx, y + dy),
+        new Point(x + dx, y),
+      ],
+      lambda
+    )
+  );
+}
+
 /**
  * This function calculates the thermal bridge and returns all points and their temperature
  * @param {*} components
  * @param {*} boundaryConditions
  */
 
-function show_calculation(allPoints, components) {
+export function show_calculation(allPoints, components) {
   showInfo("Show calculations");
   if (typeof allPoints == "undefined") {
     return;
@@ -83,7 +112,7 @@ function show_calculation(allPoints, components) {
       scaleFactor
     );
   }
-  for (let component of components) {
+  for (const component of components) {
     context.strokeRect(
       component.x1 * scaleFactor,
       component.y1 * scaleFactor,
@@ -96,22 +125,22 @@ function show_calculation(allPoints, components) {
 function show_components(components) {
   showInfo("Show components");
   context.clearRect(0, 0, canvas.width, canvas.height);
-  for (let component of components) {
+  for (const component of components) {
     context.fillStyle = `rgb(
             ${Math.floor((component.lambda / 2) * 255)}
             200
             ${Math.floor(255 - (component.lambda / 2) * 255)})`;
     context.fillRect(
-      component.x1 * scaleFactor,
-      component.y1 * scaleFactor,
-      component.width * scaleFactor,
-      component.height * scaleFactor
+      component.xMin * scaleFactor,
+      component.yMin * scaleFactor,
+      (component.xMax - component.xMin) * scaleFactor,
+      (component.yMax - component.yMin) * scaleFactor
     );
     context.strokeRect(
-      component.x1 * scaleFactor,
-      component.y1 * scaleFactor,
-      component.width * scaleFactor,
-      component.height * scaleFactor
+      component.xMin * scaleFactor,
+      component.yMin * scaleFactor,
+      (component.xMax - component.xMin) * scaleFactor,
+      (component.yMax - component.yMin) * scaleFactor
     );
   }
 }
@@ -271,14 +300,12 @@ function canvas_draw(event) {
       y_small = event.offsetY;
       hight = canvasData.y_down - event.offsetY;
     }
-    components.push(
-      new Component(
-        Math.floor(x_small / scaleFactor),
-        Math.floor(y_small / scaleFactor),
-        Math.floor(width / scaleFactor),
-        Math.floor(hight / scaleFactor),
-        1
-      )
+    createComponents(
+      Math.floor(x_small / scaleFactor),
+      Math.floor(y_small / scaleFactor),
+      Math.floor(width / scaleFactor),
+      Math.floor(hight / scaleFactor),
+      1
     );
     show_components(components);
   } else if (event.type == "mousemove") {

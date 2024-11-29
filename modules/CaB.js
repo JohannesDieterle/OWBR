@@ -1,36 +1,45 @@
+import * as matrix from "/modules/matrix.js";
+
 export class Component {
-  constructor(x, y, width, height, lambda) {
-    this.x1 = x;
-    this.x2 = x + width;
-    this.y1 = y;
-    this.y2 = y + height;
-    this.width = width;
-    this.height = height;
+  constructor(cornerPoints, lambda = 1) {
+    this.cornerPoints = cornerPoints;
     this.lambda = lambda;
+    this.elements = [];
+    this.points = [...cornerPoints];
+
+    this.xMin = cornerPoints[0].x;
+    this.xMax = cornerPoints[0].x;
+    this.yMin = cornerPoints[0].y;
+    this.yMax = cornerPoints[0].y;
+    for (const cornerPoint of cornerPoints) {
+      if (cornerPoint.x < this.xMin) {
+        this.xMin = cornerPoint.x;
+      }
+      if (cornerPoint.x > this.xMax) {
+        this.xMax = cornerPoint.x;
+      }
+      if (cornerPoint.y < this.yMin) {
+        this.yMin = cornerPoint.y;
+      }
+      if (cornerPoint.y > this.yMax) {
+        this.yMax = cornerPoint.y;
+      }
+    }
+  }
+}
+
+export class Line {
+  constructor(point1, point2) {
+    this.p1 = point1;
+    this.p2 = point2;
   }
 }
 
 export class Element {
-  constructor(x, y, elementWidth, elementHeight, lambda) {
-    this.x1 = x;
-    this.x2 = x + elementWidth;
-    this.y1 = y;
-    this.y2 = y + elementHeight;
-    this.alpha = lambda / elementWidth; // TODO: Change to include elementHeight
-
-    this.points = [
-      new Point(this.x1, this.y1),
-      new Point(this.x2, this.y1),
-      new Point(this.x1, this.y2),
-      new Point(this.x2, this.y2),
-    ];
-
-    this.matrix = [
-      [2 * this.alpha, -this.alpha, -this.alpha, 0],
-      [-this.alpha, 2 * this.alpha, 0, -this.alpha],
-      [-this.alpha, 0, 2 * this.alpha, -this.alpha],
-      [0, -this.alpha, -this.alpha, 2 * this.alpha],
-    ];
+  constructor(points, circle = undefined, lambda = 1) {
+    this.points = points;
+    this.lambda = lambda;
+    this.circle = circle;
   }
 }
 
@@ -80,5 +89,13 @@ export class CanvasData {
     this.y_down = 0;
     this.x_up = 0;
     this.y_up = 0;
+  }
+}
+
+export class Circle {
+  constructor(x, y, radius) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
   }
 }
