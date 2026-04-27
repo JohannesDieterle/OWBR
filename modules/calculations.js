@@ -1,6 +1,6 @@
-import * as matrix from "./modules/matrix.js";
-import { Element, BoundaryConditionPoint } from "./modules/CaB.js";
-import { calculate_elements } from "./modules/delaunyTriangulation.js";
+import * as matrix from "./matrix.js";
+import { Element, BoundaryConditionPoint } from "./CaB.js";
+import { calculate_elements } from "./delaunayTriangulation.js";
 
 function calculate_stiffnessmatrix(elements, boundaryConditions) {
   const t0 = performance.now();
