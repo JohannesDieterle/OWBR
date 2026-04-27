@@ -50,7 +50,8 @@ body {
   background-color: #444444;
 }
 
-.leftnav input {
+.leftnav button {
+  position: relative;
   display: list-item;
   width: 40px;
   height: 40px;
@@ -64,12 +65,26 @@ body {
   cursor: pointer;
 }
 
-.leftnav input:hover {
+.leftnav button:hover {
   background-color: orange;
 }
 
-.leftnav input.active {
+.leftnav button.active {
   background-color: orange;
+}
+
+.leftnav button img {
+  pointer-events: none;
+}
+
+.leftnav button span {
+  position: absolute;
+  bottom: 2px;
+  right: 5px;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 1);
+  pointer-events: none;
 }
 
 .main {
@@ -80,31 +95,73 @@ body {
   background-color: #111;
   width: 800px;
   height: 650px;
+  cursor: pointer;
 }
 
-.info {
+.infoUR {
   position: fixed;
   bottom: 0;
   right: 0;
   z-index: 1;
 }
-.info p {
+.infoUR p {
   width: 250px;
   margin: 5px;
   padding: 0;
   overflow: hidden;
   white-space: nowrap;
   text-align: right;
-}
-#info1 {
   color: #fff;
 }
+
+.infoUL {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+.infoUL p {
+  width: 250px;
+  margin: 5px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  color: #fff;
+}
+/* #info1 {
+  opacity: 1;
+}
 #info2 {
-  color: #aaa;
+  opacity: 0.8;
 }
 #info3 {
-  color: #666;
+  opacity: 0.5;
 }
 #info4 {
-  color: #444;
+  opacity: 0.2;
+}
+#info5 {
+  opacity: 0.1;
+} */
+
+#follower {
+  margin: 10px;
+  min-width: 50px;
+  height: max-auto;
+  background-color: white;
+  position: absolute;
+  pointer-events: none; /* Verhindert, dass das Div Mausereignisse blockiert */
+  display: none;
+}
+label {
+  width: 10px;
+  margin: 2px;
+  padding: none;
+  display: inline-block;
+}
+input {
+  width: 100px;
+  margin: 2px;
+  padding: none;
 }

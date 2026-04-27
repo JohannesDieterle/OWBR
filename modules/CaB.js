@@ -1,5 +1,3 @@
-import * as matrix from "/modules/matrix.js";
-
 export class Component {
   constructor(cornerPoints, lambda = 1) {
     this.cornerPoints = cornerPoints;
@@ -36,8 +34,9 @@ export class Line {
 }
 
 export class Element {
-  constructor(points, circle = undefined, lambda = 1) {
+  constructor(points, circle = undefined, lambda = 1, lines = undefined) {
     this.points = points;
+    this.lines = lines;
     this.lambda = lambda;
     this.circle = circle;
   }
@@ -61,17 +60,18 @@ export class BoundaryConditionPoint {
 }
 
 export class BoundaryCondition {
-  constructor(x, y, width, height, condition) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+  // Boundary width has to be at least 1
+  constructor(x1, x2, y1, y2, condition) {
+    this.xStart = x1;
+    this.xEnd = x2;
+    this.yStart = y1;
+    this.yEnd = y2;
     if (condition == 0) {
       this.temperature = 20;
-      this.alpha = 0.19;
+      this.alpha = 1 / 0.13;
     } else if (condition == 1) {
-      this.temperature = 0;
-      this.alpha = 0.04;
+      this.temperature = -5;
+      this.alpha = 1 / 0.04;
     }
 
     this.matrix = [

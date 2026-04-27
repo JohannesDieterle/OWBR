@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="de">
   <head>
@@ -7,6 +7,7 @@
     <title>Online-Wärmebrückenrechner</title>
     <link rel="icon" type="image/x-icon" href="/images/Logo_32x32.png" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="./config.js"></script>
     <script defer type="module" src="./app.js"></script>
   </head>
 
@@ -30,28 +31,110 @@
       <li>
         <input id="button_delete_all" type="button" value="Delete all" />
       </li>
-      <li><img src="/images/Logo.png" alt="Logo" /></li>
+      <li><img src="/images/Logo_32x32.png" alt="Logo" /></li>
     </ul>
 
     <div class="leftnav">
-      <input id="btn_nothing" class="active" type="button" value="point" />
-      <input id="btn_draw_rect" type="button" value="draw" />
-      <input id="btn_remove_rect" type="button" value="erase" />
+      <button
+        id="btnDragging"
+        class="active"
+        type="button"
+        aria-label="dragging"
+      >
+        <img src="images/pointer.svg" alt="Point-Icon" width="32" height="32" />
+      </button>
+      <button id="btnDrawRect" type="button" aria-label="drawComp">
+        <img src="images/pen.svg" alt="Draw-Icon" width="32" height="32" />
+        <span>Bt</span>
+      </button>
+      <button id="btnDrawBC" type="button" aria-label="drawBC">
+        <img src="images/pen.svg" alt="Draw-Icon" width="32" height="32" />
+        <span>RB</span>
+      </button>
+      <button id="btnEditComponent" type="button" aria-label="editComp">
+        <img src="images/edit.svg" alt="Edit-Icon" width="32" height="32" />
+        <span>Bt</span>
+      </button>
+      <button id="btnEditBC" type="button" aria-label="editBC">
+        <img src="images/edit.svg" alt="Edit-Icon" width="32" height="32" />
+        <span>RB</span>
+      </button>
+      <button id="btnRemoveComponent" type="button" aria-label="eraseComp">
+        <img src="images/eraser.svg" alt="Eraser-Icon" width="32" height="32" />
+        <span>Bt</span>
+      </button>
+      <button id="btnRemoveBC" type="button" aria-label="eraseBC">
+        <img src="images/eraser.svg" alt="Eraser-Icon" width="32" height="32" />
+        <span>RB</span>
+      </button>
     </div>
 
     <!-- <div class="rightnav">
       <div type="text" />
     </div> -->
 
-    <div class="info">
+    <div class="infoUR">
+      <p id="info8"></p>
+      <p id="info7"></p>
+      <p id="info6"></p>
+      <p id="info5"></p>
       <p id="info4"></p>
       <p id="info3"></p>
       <p id="info2"></p>
       <p id="info1"></p>
     </div>
 
+    <div class="infoUL">
+      <p id="infoUL"></p>
+    </div>
+
     <div class="main">
       <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="follower">
+      <label for="followerInfo1">&harr;</label>
+      <input
+        type="text"
+        id="followerInfo1"
+        name="followerInfo1"
+        onfocus="this.select()"
+      />
+      <br />
+      <label for="followerInfo2">&varr;</label>
+      <input
+        type="text"
+        id="followerInfo2"
+        name="followerInfo2"
+        onfocus="this.select()"
+      />
+      <br />
+      <label for="followerInfo3">&rarr;</label>
+      <input
+        type="text"
+        id="followerInfo3"
+        name="followerInfo3"
+        onfocus="this.select()"
+        value="0"
+      />
+      <br />
+      <label for="followerInfo4">&uarr;</label>
+      <input
+        type="text"
+        id="followerInfo4"
+        name="followerInfo4"
+        onfocus="this.select()"
+        value="0"
+      />
+      <br />
+      <label for="followerInfo5">&lambda;</label>
+      <input
+        type="text"
+        id="followerInfo5"
+        name="followerInfo5"
+        onfocus="this.select()"
+        value="0.035"
+      />
     </div>
   </body>
 </html>

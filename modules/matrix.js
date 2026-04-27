@@ -1,8 +1,11 @@
+// Variable for floatingpoint comparassion
+const EPS = 1e-9;
+
 export function compact(ogMatrix) {
   let matrix = [];
   for (let i = 0; i < ogMatrix.length; i += 1) {
     let matrixRow = [];
-    for (let j = 0; j < ogMatrix[1].length; j += 1) {
+    for (let j = 0; j < ogMatrix[i].length; j += 1) {
       if (ogMatrix[i][j] == 0) {
         continue;
       }
@@ -100,115 +103,104 @@ export function positioned(ogMatrix, counterMatrix) {
 }
 
 /**
- * This function creates the stiffness matrix and returns all points and the stiffness matrix
- * @param {number[]} e1_points
- * @param {number[][]} e1_matrix
- * @param {number[]} e2_points
- * @param {number[][]} e2_matrix
+ * Fügt die lokale Steifigkeitsmatrix eines neuen Elements in die globale
+ * Steifigkeitsmatrix ein (Assembling-Schritt der FEM). Funktion ist KI generiert - langsameres original vom Kommit 29.11.2024
+ *
+ * @param {Point[]} e1_points   - Alle Punkte die bisher in der globalen Matrix sind
+ * @param {number[][][]} e1_matrix  - Die bisherige globale Steifigkeitsmatrix (kompaktes Format)
+ * @param {Point[]} e2_points   - Die 3 Punkte des neuen Elements (lokale Punkte)
+ * @param {number[][]} e2_matrix    - Die 3x3 lokale Steifigkeitsmatrix des neuen Elements
+ * @returns {[Point[], number[][][]]} - Aktualisierte Punktliste und globale Steifigkeitsmatrix
  */
 export function stiffness(e1_points, e1_matrix, e2_points, e2_matrix) {
+  // Kopie der bisherigen Punktliste erstellen, damit das Original nicht verändert wird
   let allPoints = e1_points.map((x) => x);
 
+  // Map aufbauen: Koordinaten → Index in allPoints
+  // Ermöglicht O(1)-Lookup statt O(n)-Suche
+  const pointMap = new Map();
+  for (let [i, p] of allPoints.entries()) {
+    pointMap.set(p.x * 1_000_000 + p.y, i);
+  }
+
+  // Neue Punkte des Elements zur globalen Punktliste hinzufügen,
+  // falls sie noch nicht vorhanden sind (gemeinsame Knoten werden nicht doppelt eingefügt)
   for (let e2_point of e2_points) {
-    let double = false;
-    for (let point of e1_points) {
-      if (point.x == e2_point.x && point.y == e2_point.y) {
-        double = true;
-        break;
-      }
-    }
-    if (!double) {
+    const key = e2_point.x * 1_000_000 + e2_point.y;
+    if (!pointMap.has(key)) {
+      pointMap.set(key, allPoints.length);
       allPoints.push(e2_point);
     }
   }
 
-  let counter = 0;
-  let expand_counterMatrix_e2 = [];
-  for (let point of allPoints) {
-    let e_counter = 0;
-    for (let e2_point of e2_points) {
-      if (point.x == e2_point.x && point.y == e2_point.y) {
-        expand_counterMatrix_e2.push(counter);
-        break;
-      }
-      e_counter += 1;
-    }
-    counter += 1;
-  }
+  // Mapping: lokaler Index (0,1,2) → globaler Index in allPoints
+  // z.B. [0, 1, 2] → [42, 7, 103] bedeutet:
+  // lokaler Punkt 0 ist globaler Punkt 42, usw.
+  const expand_counterMatrix_e2 = e2_points.map((p) =>
+    pointMap.get(p.x * 1_000_000 + p.y),
+  );
 
+  // Lokale 3x3 Matrix in die richtige Position der globalen Matrix bringen
+  // aus z.B. [[k00, k01], [k10, k11]] wird eine positionierte Matrix
+  // die weiß, in welche Zeilen/Spalten der globalen Matrix die Werte gehören
   e2_matrix = positioned(e2_matrix, expand_counterMatrix_e2);
 
+  // Positionierte lokale Matrix zur globalen Matrix addieren
   let global_matrix = addition(e1_matrix, e2_matrix);
 
   return [allPoints, global_matrix];
 }
 
-function getDistance(p1, p2) {
-  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-}
+// function getDistance(p1, p2) {
+//   return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+// }
 
 export function get(element) {
   const points = element.points;
-  const lineMatrix = [
-    [element.lambda, -element.lambda],
-    [-element.lambda, element.lambda],
+  if (points.length !== 3) {
+    throw new Error("Element must have exactly 3 points for 2D FEM");
+  }
+
+  const p1 = points[0],
+    p2 = points[1],
+    p3 = points[2];
+
+  // Calculate area using cross product
+
+  const A =
+    0.5 *
+    Math.abs((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y));
+  if (A < EPS) {
+    throw new Error("Degenerate triangle");
+  }
+
+  // Calculate b and c coefficients
+  const b1 = p2.y - p3.y;
+  const c1 = p3.x - p2.x;
+  const b2 = p3.y - p1.y;
+  const c2 = p1.x - p3.x;
+  const b3 = p1.y - p2.y;
+  const c3 = p2.x - p1.x;
+
+  // Local stiffness matrix
+  const factor = element.lambda / (4 * A);
+  const elementMatrix = [
+    [
+      factor * (b1 * b1 + c1 * c1),
+      factor * (b1 * b2 + c1 * c2),
+      factor * (b1 * b3 + c1 * c3),
+    ],
+    [
+      factor * (b2 * b1 + c2 * c1),
+      factor * (b2 * b2 + c2 * c2),
+      factor * (b2 * b3 + c2 * c3),
+    ],
+    [
+      factor * (b3 * b1 + c3 * c1),
+      factor * (b3 * b2 + c3 * c2),
+      factor * (b3 * b3 + c3 * c3),
+    ],
   ];
 
-  let elementMatrix = zeroes(points.length, points.length);
-  for (let i = 0; i < points.length; i++) {
-    const p1Index = i;
-    const p1 = points[p1Index];
-    let p2Index = i + 1;
-    if (p2Index == points.length) {
-      p2Index = 0;
-    }
-    let p2 = points[p2Index];
-
-    if (p1.x < p2.x) {
-      elementMatrix[p1Index][p1Index] +=
-        (lineMatrix[0][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p1Index][p2Index] +=
-        (lineMatrix[0][1] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p1Index] +=
-        (lineMatrix[1][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p2Index] +=
-        (lineMatrix[1][1] * getDistance(p1, p2)) / 100;
-    } else if (p1.x > p2.x) {
-      elementMatrix[p1Index][p1Index] +=
-        (lineMatrix[0][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p1Index][p2Index] +=
-        (lineMatrix[0][1] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p1Index] +=
-        (lineMatrix[1][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p2Index] +=
-        (lineMatrix[1][1] * getDistance(p1, p2)) / 100;
-    } else if (p1.y < p2.y) {
-      elementMatrix[p1Index][p1Index] +=
-        (lineMatrix[0][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p1Index][p2Index] +=
-        (lineMatrix[0][1] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p1Index] +=
-        (lineMatrix[1][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p2Index] +=
-        (lineMatrix[1][1] * getDistance(p1, p2)) / 100;
-    } else if (p1.y > p2.y) {
-      elementMatrix[p1Index][p1Index] +=
-        (lineMatrix[0][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p1Index][p2Index] +=
-        (lineMatrix[0][1] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p1Index] +=
-        (lineMatrix[1][0] * getDistance(p1, p2)) / 100;
-      elementMatrix[p2Index][p2Index] +=
-        (lineMatrix[1][1] * getDistance(p1, p2)) / 100;
-    }
-  }
-
-  for (let [i, column] of elementMatrix.entries()) {
-    for (let [j, row] of column.entries()) {
-      if (row == 0) {
-        elementMatrix[i][j] = 1;
-      }
-    }
-  }
   return elementMatrix;
 }
